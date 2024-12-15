@@ -13,8 +13,8 @@
 #define OLED_SDA D2
 #define OLED_SCL D1
 
+const char* HOSTNAME= "ESP8266-BMS";
 
-#define HOSTNAME "ESP8266-BMS"
 #define VERSION "0.9.0"
 
 // config mqtt

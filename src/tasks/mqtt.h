@@ -207,7 +207,7 @@ public: void HA_discovery(){
 
   }
 
-public: void send(String value){
+public: bool send(String value){
       String topic = "Xlyric/"+ node_id +"/sensors/";
       String message;
       JsonDocument doc;
@@ -219,7 +219,8 @@ public: void send(String value){
         doc[object_id] = value.c_str();
       }
       serializeJson(doc, message);
-      client.publish(String(topic + object_id + "/state").c_str(), message.c_str(), retain_flag);
+      return (client.publish(String(topic + object_id + "/state").c_str(), message.c_str(), retain_flag) );
+
   }
 };
 
@@ -253,23 +254,25 @@ void devices_init(){
 /// function reconnect 
 void reconnect() {
     // Loop until we're reconnected
+        String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
+        String mqtt_id = String(HOSTNAME) + "-" + node_mac;
     while (!client.connected()) {
-      Serial.print("Attempting MQTT connection...");
+        Serial.print("Attempting MQTT connection...");
         client.setServer(MQTT_SERVER, MQTT_PORT);
-        client.setKeepAlive(120);
-        client.setBufferSize(1024);
-        client.connect(HOSTNAME, MQTT_USER, MQTT_PASSWORD);
+        client.setKeepAlive(20);
+        client.setBufferSize(2048);
+        client.connect(mqtt_id.c_str(), MQTT_USER, MQTT_PASSWORD);
       // Attempt to connect
-      if (client.connect(HOSTNAME)) {
+      if (client.connect(mqtt_id.c_str())) {
         Serial.println("connected");
         // Once connected, publish an announcement...
-        String node_mac = WiFi.macAddress().substring(12,14)+ WiFi.macAddress().substring(15,17);
         String topic_Xlyric = "Xlyric/BMS-" + node_mac +"/";;
         client.publish(String(topic_Xlyric +"status").c_str(),"online",true);
 
         // déclaration des sensors
         HA_temp.HA_discovery();
         HA_voltage.HA_discovery();
+
       } else {
         Serial.print("failed, rc=");
         Serial.print(client.state());
@@ -285,13 +288,15 @@ void reconnect() {
 // task mqtt
 
 void mqtt_task() {
-    if (!client.connected()) {
+    //Serial.println("MQTT task");
+    if (client.state()!=0) {
       reconnect();
     }
-    //client.loop();
+    Serial.println(client.state());
     HA_temp.send(String(dallas.temperature));
     HA_voltage.send(String(voltage.voltage));
     client.loop();
+
 }
 
 

@@ -48,9 +48,7 @@ void setup() {
   runner.addTask(Task_dallas); // ajout de la tache dallas
   runner.addTask(Task_oled); // ajout de la tache oled
   runner.addTask(Task_voltage); // ajout de la tache voltage
-  //Task_dallas.enable();
   oled.init();
-  //Task_oled.enable();
   runner.enableAll();
 
   // démarrage file system
@@ -88,17 +86,15 @@ void setup() {
   //***********************************
   devices_init();
   runner.addTask(Task_mqtt); // ajout de la tache mqtt
-  //Task_mqtt.enable();
+  Task_mqtt.enable();
   
-
-
-
 
 }
 
 void loop() {
   runner.execute();
-  delay(5000);
+  client.loop();
+  delay(1000);
   // put your main code here, to run repeatedly:
 }
 
