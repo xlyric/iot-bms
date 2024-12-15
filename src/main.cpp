@@ -43,13 +43,6 @@ void setup() {
   // init des ports 
   pinMode(VOLTAGE_DIVIDER_PIN, INPUT);
 
-  //dallas.init(); // init de la dallas
-        sensors.begin();
-        sensors.setWaitForConversion(false);
-        sensors.setResolution(12);
-        sensors.requestTemperatures(); // Send the command to get temperatures
-        dallas.temperature = sensors.getTempCByIndex(0);
-
   /// init des tasks 
   runner.init();
   runner.addTask(Task_dallas); // ajout de la tache dallas

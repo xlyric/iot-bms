@@ -28,16 +28,19 @@ struct dallas_data {
     void get_temperature() {
         sensors.requestTemperatures(); // Send the command to get temperatures
         temperature = sensors.getTempCByIndex(0);
+        if (temperature == -127.00) {
+          init();
+        }
     }
 
 };
 
-dallas_data dallas;
+extern dallas_data dallas;
 
 void dallas_task() {
   dallas.get_temperature(); 
-  //Serial.print("Temperature is: ");
-  //Serial.println(dallas.temperature); // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
+  Serial.print("Temperature is: ");
+  Serial.println(dallas.temperature); // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
 }
 
 #endif  // TASK_DALLAS
