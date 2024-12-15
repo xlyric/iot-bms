@@ -33,10 +33,23 @@ Task Task_voltage(9990, TASK_FOREVER, &voltage_task); // tache voltage
 Task Task_mqtt(10050, TASK_FOREVER, &mqtt_task); // tache mqtt
 Scheduler runner;
 
+/// déclaration de la dallas
+dallas_data dallas;
+
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  // init des ports 
+  pinMode(VOLTAGE_DIVIDER_PIN, INPUT);
+
+  //dallas.init(); // init de la dallas
+        sensors.begin();
+        sensors.setWaitForConversion(false);
+        sensors.setResolution(12);
+        sensors.requestTemperatures(); // Send the command to get temperatures
+        dallas.temperature = sensors.getTempCByIndex(0);
+
   /// init des tasks 
   runner.init();
   runner.addTask(Task_dallas); // ajout de la tache dallas
@@ -82,7 +95,7 @@ void setup() {
   //***********************************
   devices_init();
   runner.addTask(Task_mqtt); // ajout de la tache mqtt
-  Task_mqtt.enable();
+  //Task_mqtt.enable();
   
 
 
